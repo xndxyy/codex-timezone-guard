@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AssemblyName>CodexTimezoneGuard</AssemblyName>
+    <AssemblyTitle>Codex Timezone Guard</AssemblyTitle>
+    <Description>Process-isolated IANA timezone launcher for Codex desktop. Prerelease.</Description>
+    <PublishTrimmed>false</PublishTrimmed>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+  </PropertyGroup>
+  <ItemGroup><ProjectReference Include="../CodexTimezoneGuard.Core/CodexTimezoneGuard.Core.csproj" /></ItemGroup>
+</Project>

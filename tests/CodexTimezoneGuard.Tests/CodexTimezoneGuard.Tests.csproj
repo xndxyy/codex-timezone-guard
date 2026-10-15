@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net10.0</TargetFramework><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/CodexTimezoneGuard.Core/CodexTimezoneGuard.Core.csproj" />
+    <ProjectReference Include="../EnvironmentProbe/EnvironmentProbe.csproj" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+</Project>
