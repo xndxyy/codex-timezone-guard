@@ -1,0 +1,18 @@
+{
+  "project": "codex-timezone-guard",
+  "created_date": "2026-10-15",
+  "user_facing_timezone": "America/Phoenix",
+  "stage": "implementation_in_progress",
+  "isolation_choice": "A",
+  "isolation_approved_by_user": true,
+  "written_design_approved": true,
+  "implementation_started": true,
+  "executable_built": false,
+  "real_codex_runtime_verified": false,
+  "github_published": false,
+  "proposed_repository": "xndxyy/codex-timezone-guard",
+  "design": "docs/design.md",
+  "next_action": "Implement approved design in independent D:\\codex_time workspace, test, package and publish a prerelease with honest runtime limits.",
+  "parent_tracked_files_modified_by_this_task": false,
+  "workspace": "D:\\codex_time"
+}
