@@ -50,16 +50,19 @@ public static class DesktopIdentity
         // Do not collapse unreadable identity metadata into "not a desktop" for a live process.
         var info = FileVersionInfo.GetVersionInfo(executable);
         // CLI name alone, npm wrappers and a manually selected unknown exe are never enough.
-        return info.ProductName?.Equals("Codex", StringComparison.OrdinalIgnoreCase) == true &&
-            info.CompanyName?.Contains("OpenAI", StringComparison.OrdinalIgnoreCase) == true &&
-            HasElectronResources(executable);
+        if (info.ProductName?.Equals("Codex", StringComparison.OrdinalIgnoreCase) != true ||
+            info.CompanyName?.Contains("OpenAI", StringComparison.OrdinalIgnoreCase) != true) return false;
+        // A live process with matching metadata is not proven unrelated when resources disappear
+        // or become inaccessible after startup. Discovery rejects it; the running guard stays uncertain.
+        if (!HasElectronResources(executable)) throw new IOException("Desktop resources unavailable for matching running identity.");
+        return true;
     }
 }
 public enum RunningState { Clear, Running, Uncertain }
 public interface IRunningGuard { RunningState Check(CodexCandidate candidate); }
 // An observation is limited to executable/package identity, never process environments or account data.
 public sealed record RunningProcessObservation(string? ImagePath, string? PackageFamily, bool PackageIdentityKnown = true);
-public sealed class ObservedRunningGuard(Func<IEnumerable<RunningProcessObservation>> observe, Func<string, bool> isDesktopLayout) : IRunningGuard
+public sealed class ObservedRunningGuard(Func<IEnumerable<RunningProcessObservation>> observe, Func<string, bool>? isDesktopLayout = null) : IRunningGuard
 {
     public RunningState Check(CodexCandidate candidate)
     {
@@ -75,7 +78,7 @@ public sealed class ObservedRunningGuard(Func<IEnumerable<RunningProcessObservat
                 if (!process.PackageIdentityKnown) { uncertain = true; continue; }
                 // A different known package (notably ChatGPT) is not Codex. Ordinary installs require
                 // the same product/company/Electron layout validation used by client discovery.
-                if (process.PackageFamily is null && isDesktopLayout(process.ImagePath)) return RunningState.Running;
+                if (process.PackageFamily is null && (isDesktopLayout ?? DesktopIdentity.IsDesktopLayoutForRunningProcess)(process.ImagePath)) return RunningState.Running;
             }
             catch (Exception e) when (e is ArgumentException or IOException or UnauthorizedAccessException or System.ComponentModel.Win32Exception) { uncertain = true; }
         }

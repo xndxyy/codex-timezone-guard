@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net;
+using System.Text;
 using System.Text.Json;
 using CodexTimezoneGuard.Core;
 
@@ -121,7 +122,7 @@ await Test("running guard refuses existing or uncertain process", () => Sync(() 
     Check(l.Calls == 0);
 }));
 RunningState ObserveRunning(CodexCandidate selected, RunningProcessObservation[] processes, Func<string, bool>? desktop = null) =>
-    new ObservedRunningGuard(() => processes, desktop ?? DesktopIdentity.IsDesktopLayout).Check(selected);
+    new ObservedRunningGuard(() => processes, desktop).Check(selected);
 var ordinarySelected = new CodexCandidate(Path.Combine(work, "selected", "Codex.exe"), "ordinary fixture");
 var storeSelected = new CodexCandidate(Path.Combine(work, "store-current", "ChatGPT.exe"), "Store fixture", CodexDiscovery.StoreFamily);
 string otherDesktop = Path.Combine(work, "other-install", "Codex.exe");
@@ -167,6 +168,24 @@ await Test("cross-install known running takes priority over inaccessible process
 await Test("cross-install missing desktop metadata permission stays uncertain", () => Sync(() => {
     var state = ObserveRunning(ordinarySelected, [new(otherDesktop, null)], _ => throw new UnauthorizedAccessException());
     Check(state == RunningState.Uncertain, $"expected Uncertain for unreadable desktop identity, got {state}");
+}));
+await Test("cross-install matching desktop metadata without resources stays uncertain", () => Sync(() => {
+    string executable = DesktopMetadataFixture(Path.Combine(work, "metadata-without-resources"));
+    Check(!DesktopIdentity.HasElectronResources(executable));
+    Check(!DesktopIdentity.IsDesktopLayout(executable), "discovery must reject incomplete resources");
+    var state = ObserveRunning(ordinarySelected, [new(executable, null)]);
+    Check(state == RunningState.Uncertain, $"expected Uncertain for matching metadata but unavailable resources, got {state}");
+}));
+await Test("cross-install validated desktop resource removal stays uncertain", () => Sync(() => {
+    string folder = Path.Combine(work, "metadata-resources-removed");
+    string executable = DesktopMetadataFixture(folder);
+    Directory.CreateDirectory(Path.Combine(folder, "resources"));
+    foreach (string file in new[] { Path.Combine("resources", "app.asar"), "icudtl.dat", "chrome_100_percent.pak" }) File.WriteAllText(Path.Combine(folder, file), "fixture");
+    Check(DesktopIdentity.IsDesktopLayout(executable), "complete metadata fixture must validate");
+    Check(ObserveRunning(ordinarySelected, [new(executable, null)]) == RunningState.Running);
+    File.Delete(Path.Combine(folder, "resources", "app.asar"));
+    var state = ObserveRunning(ordinarySelected, [new(executable, null)]);
+    Check(state == RunningState.Uncertain, $"expected Uncertain after required resources disappear, got {state}");
 }));
 await Test("manual path cannot bypass desktop identity", () => Sync(() => {
     var l = new FakeLauncher(); Error(() => new LaunchCoordinator(new FakeRunning(RunningState.Clear), l).Launch(new("codex.exe", "CLI"), "Asia/Tokyo"), "invalid_desktop_identity"); Check(l.Calls == 0);
@@ -255,6 +274,30 @@ int reportIndex = Array.IndexOf(args, "--report");
 if (reportIndex >= 0 && reportIndex + 1 < args.Length) { string path = Path.GetFullPath(args[reportIndex + 1]); Directory.CreateDirectory(Path.GetDirectoryName(path)!); File.WriteAllText(path, JsonSerializer.Serialize(new { success = failed == 0, passed, failed, total = passed + failed, results }, new JsonSerializerOptions { WriteIndented = true })); }
 return failed == 0 ? 0 : 1;
 static string Geo(string ip, string zone = "America/New_York") => JsonSerializer.Serialize(new { success = true, ip, timezone = new { id = zone } });
+static string DesktopMetadataFixture(string folder)
+{
+    // A never-executed copy of this test apphost supplies actual PE version metadata, not a mock
+    // validation result. Only its existing ProductName/CompanyName string payloads are replaced.
+    Directory.CreateDirectory(folder);
+    byte[] image = File.ReadAllBytes(Environment.ProcessPath ?? throw new InvalidOperationException("test apphost path missing"));
+    foreach (var (key, value) in new[] { ("ProductName", "Codex"), ("CompanyName", "OpenAI") })
+    {
+        byte[] keyBytes = Encoding.Unicode.GetBytes(key + "\0"), valueBytes = Encoding.Unicode.GetBytes(value + "\0");
+        int keyOffset = image.AsSpan().IndexOf(keyBytes);
+        if (keyOffset < 6) throw new InvalidOperationException("version resource key missing: " + key);
+        int oldValueBytes = BitConverter.ToUInt16(image, keyOffset - 4) * 2;
+        int valueOffset = (keyOffset + keyBytes.Length + 3) & ~3;
+        if (oldValueBytes < valueBytes.Length || valueOffset + oldValueBytes > image.Length) throw new InvalidOperationException("version resource capacity invalid: " + key);
+        Array.Clear(image, valueOffset, oldValueBytes);
+        valueBytes.CopyTo(image, valueOffset);
+        BitConverter.GetBytes(checked((ushort)(valueBytes.Length / 2))).CopyTo(image, keyOffset - 4);
+    }
+    string executable = Path.Combine(folder, "Codex.exe");
+    File.WriteAllBytes(executable, image);
+    var info = FileVersionInfo.GetVersionInfo(executable);
+    if (info.ProductName != "Codex" || info.CompanyName != "OpenAI") throw new InvalidOperationException("metadata fixture did not acquire expected version identity");
+    return executable;
+}
 static string FindRoot() { var d = new DirectoryInfo(AppContext.BaseDirectory); while (d is not null && !File.Exists(Path.Combine(d.FullName, "goal.md"))) d = d.Parent; return d?.FullName ?? throw new InvalidOperationException("repository not found"); }
 sealed class FakeTransport(ProbeReply[] responses) : IProbeTransport
 {
