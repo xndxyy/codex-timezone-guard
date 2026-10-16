@@ -1,0 +1,36 @@
+{
+  "success": true,
+  "purpose": "Explicit anonymous diagnostic; no Codex launch",
+  "proxy": {
+    "kind": "Http",
+    "code": "system_proxy"
+  },
+  "runningStates": [
+    "Running"
+  ],
+  "evidence": {
+    "schemaVersion": 1,
+    "appVersion": "0.1.0-preview.1",
+    "prerelease": true,
+    "osVersion": "10.0.26300.0",
+    "architecture": "X64",
+    "systemTimezone": "China Standard Time",
+    "proxyEnvironmentPresent": false,
+    "proxyEnvironmentWarning": "Launcher uses read-only system proxy/PAC. Proxy environment and per-process/TUN rules may differ.",
+    "network": {
+      "Suggested": false,
+      "Timezone": null,
+      "Code": "conflicting_egress",
+      "Observations": 3,
+      "AddressFamily": null
+    },
+    "discovery": {
+      "count": 1,
+      "code": "client_found",
+      "storeCandidates": 1,
+      "desktopCandidates": 0
+    },
+    "realCodexRuntimeVerified": false,
+    "privacy": "No raw IP, query URL, proxy host/credentials, full client path, response body, auth data or raw exception text."
+  }
+}

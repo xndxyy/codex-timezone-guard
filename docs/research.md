@@ -26,11 +26,17 @@
 2. `docs /dotnet/docs "Deploy a Windows Forms application as a Windows x64 self-contained single executable with PublishSingleFile IncludeNativeLibrariesForSelfExtract; limitations trimming Windows Forms"`
 3. `docs /dotnet/docs "ProcessStartInfo.Environment child-process-only environment variables UseShellExecute false Windows inherit environment no global changes"`
 
-查询返回单文件配置、Windows Forms 属性以及子进程环境信息；对于未回答的限制不从片段推导已验证兼容性，采用官方完整页面进一步核对。当前 SDK 为 10.0.400，存在 Windows Desktop 引用包；未编译或运行本项目。
+查询返回单文件配置、Windows Forms 属性以及子进程环境信息；对于未回答的限制不从片段推导已验证兼容性，采用官方完整页面进一步核对。设计调研当时 SDK 为 10.0.400，存在 Windows Desktop 引用包；当时尚未编译或运行本项目。
 
-## 尚无的证据
+## 初始设计阶段尚无的证据（历史记录，不是当前状态）
 
 - 没有本项目真实公网探测结果或保存的原始 IP。
 - 没有本项目应用代码、测试通过记录、EXE 或真实 Codex 运行时验证。
 - 没有已创建的项目远端仓库或 Release。
 - 上一轮发现了同名 Codex CLI/后台路径，不应据此认定桌面安装路径或版本。
+
+## 实现后的证据索引
+
+实际实现、构建、测试和公网结果见 verification.md 及 evidence/ 中的脱敏快照。原始公网 IP 没有保存。已经观察到成功建议和出口冲突两种结果，不能只宣传其中一个；真实 Codex 日期运行时仍需用户安全退出后的独立验收。
+
+2026-10-16 的 GitHub CLI Context7 library 解析取得 `/websites/cli_github_manual`；后续两项 docs 调用被会话中断，未计为已读文档。发布命令参数改以本机官方 `gh repo create --help`、`gh release create --help` 和 `gh release verify-asset --help` 的实际输出核实，不把未返回的文档或训练记忆当作引用。校验采用下载资产后的 SHA-256 比对，不冒充代码签名/已验证的发布证明。

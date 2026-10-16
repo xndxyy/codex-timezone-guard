@@ -1,0 +1,32 @@
+{
+  "success": true,
+  "passed": 14,
+  "failed": 0,
+  "checks": {
+    "ui_has_timezone_selector": true,
+    "ui_has_manual_offline_mode": true,
+    "ui_has_launch_action": true,
+    "ui_has_privacy_disclosure": true,
+    "iana_and_dst": true,
+    "public_address_policy": true,
+    "child_environment_isolation": true,
+    "small_screen_scrolls_to_launch": true,
+    "launch_reachable_after_scroll": true,
+    "offline_without_consent": true,
+    "switch_to_manual_preserves_selected_timezone": true,
+    "normal_close_vetoed_during_launch": true,
+    "normal_close_allowed_after_launch_cleanup": true,
+    "normal_close_allowed_without_launch": true
+  },
+  "layout": [
+    {
+      "viewport": "{Width=1318, Height=672}",
+      "launchPosition": "{X=874,Y=504}",
+      "launchSize": "{Width=405, Height=75}",
+      "scroll": "{X=0,Y=-558}",
+      "maximum": 1229
+    }
+  ],
+  "offline": true,
+  "realCodexVerified": false
+}

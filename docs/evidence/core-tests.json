@@ -1,0 +1,400 @@
+{
+  "success": true,
+  "passed": 98,
+  "failed": 0,
+  "total": 98,
+  "results": [
+    {
+      "name": "IANA accepts region, UTC and catalog",
+      "passed": true
+    },
+    {
+      "name": "IANA rejects Windows names, country and offsets",
+      "passed": true
+    },
+    {
+      "name": "DST winter and summer preview",
+      "passed": true
+    },
+    {
+      "name": "settings roundtrip atomic and no IP fields",
+      "passed": true
+    },
+    {
+      "name": "corrupt settings fall back explicitly",
+      "passed": true
+    },
+    {
+      "name": "invalid settings cannot replace valid saved settings",
+      "passed": true
+    },
+    {
+      "name": "public address 8.8.8.8",
+      "passed": true
+    },
+    {
+      "name": "public address 1.1.1.1",
+      "passed": true
+    },
+    {
+      "name": "public address 2606:4700:4700::1111",
+      "passed": true
+    },
+    {
+      "name": "public address 2001:4860:4860::8888",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 127.0.0.1",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 0.1.2.3",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 10.0.0.1",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 100.64.0.1",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 169.254.1.1",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 172.16.0.1",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 192.168.1.1",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 192.0.0.9",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 192.0.2.1",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 198.18.0.1",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 198.51.100.1",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 203.0.113.2",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 224.0.0.1",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 240.1.2.3",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 255.255.255.255",
+      "passed": true
+    },
+    {
+      "name": "reject special IP ::",
+      "passed": true
+    },
+    {
+      "name": "reject special IP ::1",
+      "passed": true
+    },
+    {
+      "name": "reject special IP ::ffff:8.8.8.8",
+      "passed": true
+    },
+    {
+      "name": "reject special IP fe80::1",
+      "passed": true
+    },
+    {
+      "name": "reject special IP fc00::1",
+      "passed": true
+    },
+    {
+      "name": "reject special IP ff02::1",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 2001:db8::1",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 2001::1",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 2002:0808:0808::1",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 64:ff9b::808:808",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 2001:20::1",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 3fff::1",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 8.8.8.8%1",
+      "passed": true
+    },
+    {
+      "name": "reject special IP 001.1.1.1",
+      "passed": true
+    },
+    {
+      "name": "reject special IP https://8.8.8.8",
+      "passed": true
+    },
+    {
+      "name": "reject special IP bad",
+      "passed": true
+    },
+    {
+      "name": "trace extracts explicit public IP only",
+      "passed": true
+    },
+    {
+      "name": "reject malformed trace -121",
+      "passed": true
+    },
+    {
+      "name": "reject malformed trace -123",
+      "passed": true
+    },
+    {
+      "name": "reject malformed trace -16",
+      "passed": true
+    },
+    {
+      "name": "reject malformed trace -111",
+      "passed": true
+    },
+    {
+      "name": "reject malformed trace -110",
+      "passed": true
+    },
+    {
+      "name": "reject malformed trace -118",
+      "passed": true
+    },
+    {
+      "name": "geo verifies echoed queried IP and IANA",
+      "passed": true
+    },
+    {
+      "name": "target twice then explicit observed IP lookup",
+      "passed": true
+    },
+    {
+      "name": "conflicting repeated IP forces manual before geo",
+      "passed": true
+    },
+    {
+      "name": "conflicting auxiliary forces manual",
+      "passed": true
+    },
+    {
+      "name": "unsupported auxiliary disclosed but primary may suggest",
+      "passed": true
+    },
+    {
+      "name": "HTTP 403 no generic fallback",
+      "passed": true
+    },
+    {
+      "name": "HTTP 404 no generic fallback",
+      "passed": true
+    },
+    {
+      "name": "HTTP 429 no generic fallback",
+      "passed": true
+    },
+    {
+      "name": "HTTP 500 no generic fallback",
+      "passed": true
+    },
+    {
+      "name": "HTTP 302 no generic fallback",
+      "passed": true
+    },
+    {
+      "name": "oversized fake response rejected",
+      "passed": true
+    },
+    {
+      "name": "cancellation has no suggestion",
+      "passed": true
+    },
+    {
+      "name": "proxy explicit error never falls back direct",
+      "passed": true
+    },
+    {
+      "name": "production URL allowlist before proxy or network",
+      "passed": true
+    },
+    {
+      "name": "case-insensitive child TZ only and node removed",
+      "passed": true
+    },
+    {
+      "name": "desktop identity rejects CLI and filename-only",
+      "passed": true
+    },
+    {
+      "name": "running guard refuses existing or uncertain process",
+      "passed": true
+    },
+    {
+      "name": "cross-install Store running blocks ordinary selected",
+      "passed": true
+    },
+    {
+      "name": "cross-install ordinary running blocks Store selected",
+      "passed": true
+    },
+    {
+      "name": "cross-install different ordinary desktop blocks ordinary selected",
+      "passed": true
+    },
+    {
+      "name": "cross-install older Store version same family blocks current",
+      "passed": true
+    },
+    {
+      "name": "cross-install actual CLI layout stays ignored",
+      "passed": true
+    },
+    {
+      "name": "cross-install unrelated ChatGPT package stays ignored",
+      "passed": true
+    },
+    {
+      "name": "cross-install inaccessible process stays uncertain",
+      "passed": true
+    },
+    {
+      "name": "cross-install ambiguous package query blocks ordinary selected",
+      "passed": true
+    },
+    {
+      "name": "cross-install exact selected target still blocks on unknown package",
+      "passed": true
+    },
+    {
+      "name": "cross-install known running takes priority over inaccessible process",
+      "passed": true
+    },
+    {
+      "name": "cross-install missing desktop metadata permission stays uncertain",
+      "passed": true
+    },
+    {
+      "name": "cross-install matching desktop metadata without resources stays uncertain",
+      "passed": true
+    },
+    {
+      "name": "cross-install validated desktop resource removal stays uncertain",
+      "passed": true
+    },
+    {
+      "name": "manual path cannot bypass desktop identity",
+      "passed": true
+    },
+    {
+      "name": "launch lifecycle vetoes normal close through fake child cleanup",
+      "passed": true
+    },
+    {
+      "name": "launch lifecycle releases normal close after asynchronous failure cleanup",
+      "passed": true
+    },
+    {
+      "name": "launch lifecycle releases normal close after synchronous failure",
+      "passed": true
+    },
+    {
+      "name": "launch lifecycle does not block detection-only cancellation and close",
+      "passed": true
+    },
+    {
+      "name": "launch lifecycle rejects a second in-flight launch",
+      "passed": true
+    },
+    {
+      "name": "new detection and cancellation invalidate older updates",
+      "passed": true
+    },
+    {
+      "name": "fixture proves child environment without parent/global changes",
+      "passed": true
+    },
+    {
+      "name": "HTTP HTTPS named proxy chooses destination scheme",
+      "passed": true
+    },
+    {
+      "name": "SOCKS-only and proxy credentials are not silently direct",
+      "passed": true
+    },
+    {
+      "name": "Windows proxy bypass is destination-aware",
+      "passed": true
+    },
+    {
+      "name": "empty and ambiguous client discovery never guesses",
+      "passed": true
+    },
+    {
+      "name": "real transport contract anonymous GET and fixed target",
+      "passed": true
+    },
+    {
+      "name": "real transport bounds streaming body",
+      "passed": true
+    },
+    {
+      "name": "transport timeout includes slow body not only headers",
+      "passed": true
+    },
+    {
+      "name": "transport cancellation during headers propagates",
+      "passed": true
+    },
+    {
+      "name": "transport 429 stops without reading error body",
+      "passed": true
+    },
+    {
+      "name": "cross-address-family disagreement forces manual",
+      "passed": true
+    },
+    {
+      "name": "malformed and duplicate geo responses are rejected",
+      "passed": true
+    },
+    {
+      "name": "window fits 1080p at 150 percent and 1366x768",
+      "passed": true
+    }
+  ]
+}
