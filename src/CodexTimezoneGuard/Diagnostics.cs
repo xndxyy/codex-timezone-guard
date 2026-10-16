@@ -17,7 +17,7 @@ internal static class SafeMessages
         "pac_failed" => "系统 PAC/自动代理解析失败；为避免错误出口，没有降级直连。",
         "proxy_config_unavailable" => "无法读取当前用户系统代理配置。",
         "proxy_unsupported" => "代理配置不支持（SOCKS-only、含凭据或格式不明确）；没有静默直连。",
-        "already_running" => "检测到同一客户端/包的现有实例。请保存工作并自行退出后重试，本工具不会结束它。",
+        "already_running" => "检测到 Codex 桌面现有实例（可能位于另一安装路径或渠道）。请保存工作并自行退出后重试，本工具不会结束它。",
         "running_check_uncertain" => "某个可能匹配的进程不可检查，已安全停止。请自行确认已退出；不要为此提升权限。",
         "invalid_desktop_identity" => "无法重新验证 Codex 桌面身份，可能是 CLI、路径失效或资源不完整。",
         "client_ambiguous" => "存在多个客户端候选，不能擅自选择。",

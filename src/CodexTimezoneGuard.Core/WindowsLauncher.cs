@@ -8,9 +8,11 @@ namespace CodexTimezoneGuard.Core;
 [SupportedOSPlatform("windows")]
 public sealed class WindowsRunningGuard : IRunningGuard
 {
-    public RunningState Check(CodexCandidate candidate)
+    public RunningState Check(CodexCandidate candidate) => new ObservedRunningGuard(Observe, DesktopIdentity.IsDesktopLayoutForRunningProcess).Check(candidate);
+
+    private static IEnumerable<RunningProcessObservation> Observe()
     {
-        bool uncertain = false;
+        var observations = new List<RunningProcessObservation>();
         // Old Codex packages may use ChatGPT.exe. Do not read account files or process environments.
         foreach (string name in new[] { "Codex", "ChatGPT" })
         {
@@ -19,26 +21,21 @@ public sealed class WindowsRunningGuard : IRunningGuard
                 using (process)
                 {
                     IntPtr handle = Native.OpenProcess(0x1000, false, process.Id);
-                    if (handle == IntPtr.Zero) { uncertain = true; continue; }
+                    if (handle == IntPtr.Zero) { observations.Add(new(null, null, false)); continue; }
                     try
                     {
                         uint length = 32768; var path = new StringBuilder((int)length);
-                        if (!Native.QueryFullProcessImageName(handle, 0, path, ref length)) { uncertain = true; continue; }
-                        if (Path.GetFullPath(path.ToString()).Equals(Path.GetFullPath(candidate.Path), StringComparison.OrdinalIgnoreCase)) return RunningState.Running;
-                        if (candidate.PackageFamily is not null)
-                        {
-                            uint familyLength = 256; var family = new StringBuilder((int)familyLength);
-                            int result = Native.GetPackageFamilyName(handle, ref familyLength, family);
-                            if (result == 0 && family.ToString() == candidate.PackageFamily) return RunningState.Running;
-                            if (result is not (0 or 15700)) uncertain = true;
-                        }
+                        if (!Native.QueryFullProcessImageName(handle, 0, path, ref length)) { observations.Add(new(null, null, false)); continue; }
+                        uint familyLength = 256; var family = new StringBuilder((int)familyLength);
+                        int result = Native.GetPackageFamilyName(handle, ref familyLength, family);
+                        observations.Add(new(path.ToString(), result == 0 ? family.ToString() : null, result is 0 or 15700));
                     }
-                    catch (Exception e) when (e is ArgumentException or IOException or System.ComponentModel.Win32Exception) { uncertain = true; }
+                    catch (Exception e) when (e is ArgumentException or IOException or System.ComponentModel.Win32Exception) { observations.Add(new(null, null, false)); }
                     finally { Native.CloseHandle(handle); }
                 }
             }
         }
-        return uncertain ? RunningState.Uncertain : RunningState.Clear;
+        return observations;
     }
 }
 

@@ -40,18 +40,48 @@ public static class DesktopIdentity
     {
         try
         {
-            if (!Path.IsPathFullyQualified(executable) || !File.Exists(executable) || !Path.GetFileName(executable).Equals("Codex.exe", StringComparison.OrdinalIgnoreCase)) return false;
-            var info = FileVersionInfo.GetVersionInfo(executable);
-            // CLI name alone, npm wrappers and a manually selected unknown exe are never enough.
-            return info.ProductName?.Equals("Codex", StringComparison.OrdinalIgnoreCase) == true &&
-                info.CompanyName?.Contains("OpenAI", StringComparison.OrdinalIgnoreCase) == true &&
-                HasElectronResources(executable);
+            return IsDesktopLayoutForRunningProcess(executable);
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or ArgumentException or System.ComponentModel.Win32Exception) { return false; }
+    }
+    internal static bool IsDesktopLayoutForRunningProcess(string executable)
+    {
+        if (!Path.IsPathFullyQualified(executable) || !Path.GetFileName(executable).Equals("Codex.exe", StringComparison.OrdinalIgnoreCase)) return false;
+        // Do not collapse unreadable identity metadata into "not a desktop" for a live process.
+        var info = FileVersionInfo.GetVersionInfo(executable);
+        // CLI name alone, npm wrappers and a manually selected unknown exe are never enough.
+        return info.ProductName?.Equals("Codex", StringComparison.OrdinalIgnoreCase) == true &&
+            info.CompanyName?.Contains("OpenAI", StringComparison.OrdinalIgnoreCase) == true &&
+            HasElectronResources(executable);
     }
 }
 public enum RunningState { Clear, Running, Uncertain }
 public interface IRunningGuard { RunningState Check(CodexCandidate candidate); }
+// An observation is limited to executable/package identity, never process environments or account data.
+public sealed record RunningProcessObservation(string? ImagePath, string? PackageFamily, bool PackageIdentityKnown = true);
+public sealed class ObservedRunningGuard(Func<IEnumerable<RunningProcessObservation>> observe, Func<string, bool> isDesktopLayout) : IRunningGuard
+{
+    public RunningState Check(CodexCandidate candidate)
+    {
+        bool uncertain = false;
+        foreach (var process in observe())
+        {
+            try
+            {
+                // Package family is independently observed, not inferred from the selected channel/path.
+                if (process.PackageIdentityKnown && process.PackageFamily == CodexDiscovery.StoreFamily) return RunningState.Running;
+                if (process.ImagePath is null) { uncertain = true; continue; }
+                if (Path.GetFullPath(process.ImagePath).Equals(Path.GetFullPath(candidate.Path), StringComparison.OrdinalIgnoreCase)) return RunningState.Running;
+                if (!process.PackageIdentityKnown) { uncertain = true; continue; }
+                // A different known package (notably ChatGPT) is not Codex. Ordinary installs require
+                // the same product/company/Electron layout validation used by client discovery.
+                if (process.PackageFamily is null && isDesktopLayout(process.ImagePath)) return RunningState.Running;
+            }
+            catch (Exception e) when (e is ArgumentException or IOException or UnauthorizedAccessException or System.ComponentModel.Win32Exception) { uncertain = true; }
+        }
+        return uncertain ? RunningState.Uncertain : RunningState.Clear;
+    }
+}
 public interface IChildLauncher { int Launch(CodexCandidate candidate, string timezone); }
 public sealed class LaunchCoordinator(IRunningGuard running, IChildLauncher launcher)
 {

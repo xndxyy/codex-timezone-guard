@@ -120,6 +120,54 @@ await Test("running guard refuses existing or uncertain process", () => Sync(() 
     Error(() => new LaunchCoordinator(new FakeRunning(RunningState.Uncertain), l).Launch(c, "Asia/Tokyo"), "running_check_uncertain");
     Check(l.Calls == 0);
 }));
+RunningState ObserveRunning(CodexCandidate selected, RunningProcessObservation[] processes, Func<string, bool>? desktop = null) =>
+    new ObservedRunningGuard(() => processes, desktop ?? DesktopIdentity.IsDesktopLayout).Check(selected);
+var ordinarySelected = new CodexCandidate(Path.Combine(work, "selected", "Codex.exe"), "ordinary fixture");
+var storeSelected = new CodexCandidate(Path.Combine(work, "store-current", "ChatGPT.exe"), "Store fixture", CodexDiscovery.StoreFamily);
+string otherDesktop = Path.Combine(work, "other-install", "Codex.exe");
+await Test("cross-install Store running blocks ordinary selected", () => Sync(() => {
+    var state = ObserveRunning(ordinarySelected, [new(Path.Combine(work, "store-old", "ChatGPT.exe"), CodexDiscovery.StoreFamily)]);
+    Check(state == RunningState.Running, $"expected Running for independent Store identity, got {state}");
+}));
+await Test("cross-install ordinary running blocks Store selected", () => Sync(() => {
+    var state = ObserveRunning(storeSelected, [new(otherDesktop, null)], path => path == otherDesktop);
+    Check(state == RunningState.Running, $"expected Running for validated ordinary desktop, got {state}");
+}));
+await Test("cross-install different ordinary desktop blocks ordinary selected", () => Sync(() => {
+    var state = ObserveRunning(ordinarySelected, [new(otherDesktop, null)], path => path == otherDesktop);
+    Check(state == RunningState.Running, $"expected Running for another validated installation, got {state}");
+}));
+await Test("cross-install older Store version same family blocks current", () => Sync(() => {
+    Check(ObserveRunning(storeSelected, [new(Path.Combine(work, "store-old", "ChatGPT.exe"), CodexDiscovery.StoreFamily)]) == RunningState.Running);
+}));
+await Test("cross-install actual CLI layout stays ignored", () => Sync(() => {
+    string path = Path.Combine(work, "cli", "Codex.exe");
+    Check(File.Exists(path) && !DesktopIdentity.IsDesktopLayout(path));
+    Check(ObserveRunning(storeSelected, [new(path, null)]) == RunningState.Clear);
+    Check(ObserveRunning(ordinarySelected, [new(path, null)]) == RunningState.Clear);
+}));
+await Test("cross-install unrelated ChatGPT package stays ignored", () => Sync(() => {
+    var unrelated = new RunningProcessObservation(Path.Combine(work, "chatgpt", "ChatGPT.exe"), "OpenAI.ChatGPT_unrelated");
+    Check(ObserveRunning(storeSelected, [unrelated]) == RunningState.Clear);
+    Check(ObserveRunning(ordinarySelected, [unrelated]) == RunningState.Clear);
+}));
+await Test("cross-install inaccessible process stays uncertain", () => Sync(() => {
+    Check(ObserveRunning(ordinarySelected, [new(null, null, false)]) == RunningState.Uncertain);
+}));
+await Test("cross-install ambiguous package query blocks ordinary selected", () => Sync(() => {
+    var state = ObserveRunning(ordinarySelected, [new(Path.Combine(work, "ambiguous", "ChatGPT.exe"), null, false)]);
+    Check(state == RunningState.Uncertain, $"expected Uncertain for unreadable package identity, got {state}");
+}));
+await Test("cross-install exact selected target still blocks on unknown package", () => Sync(() => {
+    Check(ObserveRunning(ordinarySelected, [new(ordinarySelected.Path.ToUpperInvariant(), null, false)]) == RunningState.Running);
+}));
+await Test("cross-install known running takes priority over inaccessible process", () => Sync(() => {
+    Check(ObserveRunning(ordinarySelected, [new(null, null, false), new(Path.Combine(work, "store-old", "ChatGPT.exe"), CodexDiscovery.StoreFamily)]) == RunningState.Running);
+}));
+await Test("cross-install missing desktop metadata permission stays uncertain", () => Sync(() => {
+    var state = ObserveRunning(ordinarySelected, [new(otherDesktop, null)], _ => throw new UnauthorizedAccessException());
+    Check(state == RunningState.Uncertain, $"expected Uncertain for unreadable desktop identity, got {state}");
+}));
 await Test("manual path cannot bypass desktop identity", () => Sync(() => {
     var l = new FakeLauncher(); Error(() => new LaunchCoordinator(new FakeRunning(RunningState.Clear), l).Launch(new("codex.exe", "CLI"), "Asia/Tokyo"), "invalid_desktop_identity"); Check(l.Calls == 0);
 }));
