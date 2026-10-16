@@ -2,14 +2,16 @@
 
 调研日：2026-10-15（America/Phoenix）。这是源码/文档调研，不是运行成功或真实 Codex 兼容性证明。
 
-## 开源参考
+## 技术调研结论
 
-- [iUshio/codexTimeZoneRev](https://github.com/iUshio/codexTimeZoneRev)，读取时 main 提交 `799476432336501c1c7f7438f2ef377605029cfc`。MIT，原 LICENSE 版权行为 `Copyright (c) 2026 Fei-Away`。
-  - `native/launcher_core/src/platform/win/process.rs`：仅替换新进程环境中的 TZ，移除 ELECTRON_RUN_AS_NODE，挂起创建与包身份校验。
-  - `native/launcher_core/src/proxy.rs`：只读系统代理/PAC 解析，显式 PAC 失败不静默直连。
-  - `flutter_app/lib/services/network_info.dart`：多个一般 IP 源与指定 IP 地理定位；可参考取消、响应解析与缓存，但不能将此流程当成实际 Codex 出口证据。
-  - 首版排除其皮肤、账号用量、管理员 ACL 修复等无关功能。
-- [leihen08/codex-timezone-launcher](https://github.com/leihen08/codex-timezone-launcher)：轻量 Windows 原生启动器。README 区分 TZ/Node 运行时、Windows 原生时区与任务上下文，并报告子进程继承边界。本项目不复制其临时包调试注册流程。
+本记录只说明本项目的技术取舍，不列举其他社区项目名称或作优劣比较。
+必须保留的版权与许可文本集中放在 THIRD_PARTY_NOTICES.md 和 docs/licenses/。
+
+- 进程级 TZ 会被后代继承，不能描述成仅桌面 UI 受影响；不修改用户/机器环境。
+- 系统代理/PAC 应按目的地址只读解析，明确失败时不能静默直连。
+- 明确观测到的目标域名 IP 与一般 IP 查询来源应分离；启动器观测不是 Codex 全部实际出口的证明。
+- Store 新进程采用挂起创建、包身份核验、验证后恢复与失败清理，不注册包调试器或修复 ACL。
+- 运行时、Windows 原生时区与共享后台可能采用不同环境，必须分层记录验证证据。
 
 ## 官方文档
 

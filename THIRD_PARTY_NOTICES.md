@@ -1,4 +1,4 @@
-# Third-party notices and acknowledgements
+# Third-party license notices
 
 ## Application platform
 
@@ -17,21 +17,11 @@ LICENSE/ThirdPartyNotices files produced by the SDK are also included when
 present. Windows APIs remain part of the user's operating system; the application
 does not redistribute Windows or Codex.
 
-## Design references
+## Retained MIT copyright notice
 
-Thanks to these independently maintained open-source projects:
-
-- https://github.com/iUshio/codexTimeZoneRev — process-local timezone launcher,
-  per-destination proxy resolution, package identity safety. Research snapshot:
-  `799476432336501c1c7f7438f2ef377605029cfc`.
-- https://github.com/leihen08/codex-timezone-launcher — native Windows launcher
-  and clear documentation of the distinction between runtime and system timezones.
-
-Our C# implementation is developed separately. Reference behavior does not imply
-upstream endorsement or compatibility certification. The upstream MIT notice is
-preserved below as an acknowledgement and for any closely adapted launcher logic.
-
-### codexTimeZoneRev MIT notice
+The following copyright and license text is retained for applicable portions
+of launcher logic. This is a legal notice, not a recommendation, comparison,
+endorsement or compatibility certification.
 
 Copyright (c) 2026 Fei-Away
 

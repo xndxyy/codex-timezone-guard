@@ -18,6 +18,7 @@
   "old_folder_deletion": "blocked_by_execution_policy_not_completed",
   "old_folder_deletion_reauthorized_attempt": "2026-10-16: exact-path and reparse-point preflight passed; native PowerShell removal rejected by policy, no deletion executed",
   "readme_problem_scope_documented": true,
+  "public_documentation_policy": "Describe this project only; no unrelated community project names, links or comparisons. Preserve mandatory copyright/license text and required platform/privacy disclosures.",
   "last_verified_logic_tests": 98,
   "last_verified_packaged_ui_checks": 14,
   "last_verified_script_contracts": 16,

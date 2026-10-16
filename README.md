@@ -4,8 +4,7 @@
 
 一个面向普通用户的 Windows 中文启动器：按目标域名探测网络出口、自动推荐
 IANA 地区时区，也支持离线手动选择，然后以独立 `TZ` 环境启动 Codex。
-项目参考 [codexTimeZoneRev](https://github.com/iUshio/codexTimeZoneRev) 等开源实现，
-专注于规则代理下的检测边界与安全隔离，不集成皮肤、账号用量或代理内核。
+专注于规则代理下的时区检测、手动选择与进程级环境隔离。
 
 > **预发布提示**：这是独立社区工具，不是 OpenAI 官方产品。
 > 自动检测是基于目标请求的建议，不是 Codex 全部流量出口的证明。
@@ -139,8 +138,8 @@ ChatGPT 桌面产品当成 Codex 使用。
 
 ## 从源码构建
 
-要求 Windows x64 与 `global.json` 指定的 .NET 10 SDK，不要求 Python、Node、
-Flutter、Rust 或第三方 NuGet 应用依赖。先克隆本仓库，然后：
+要求 Windows x64 与 `global.json` 指定的 .NET 10 SDK，不需要额外的语言工具链
+或第三方 NuGet 应用依赖。先克隆本仓库，然后：
 
 ```powershell
 .\scripts\verify.ps1
@@ -182,8 +181,7 @@ This is an independent prerelease, not an OpenAI product or an access guarantee.
 Probes are recommendations, not proof of Codex's per-process route. Manual mode
 remains available. See PRIVACY.md, SECURITY.md and the verification report.
 
-## 许可证与致谢
+## 许可证
 
-[MIT](LICENSE)。感谢 [iUshio/codexTimeZoneRev](https://github.com/iUshio/codexTimeZoneRev)
-和 [leihen08/codex-timezone-launcher](https://github.com/leihen08/codex-timezone-launcher)
-提供的公开实现与边界说明。平台与上游说明见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+本项目采用 [MIT](LICENSE) 许可证。运行平台及必须保留的第三方版权、许可文本见
+[第三方许可说明](THIRD_PARTY_NOTICES.md)。

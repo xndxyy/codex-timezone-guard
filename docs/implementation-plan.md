@@ -73,7 +73,7 @@ Expected: named passing checks, a nonzero count, zero failures and build exit 0.
 
 - [x] Write Chinese-first README, English summary, PRIVACY, SECURITY, MIT/third-party notices, source build commands and compatibility/manual acceptance instructions.
 - [x] Add Windows CI calling the same verification/build scripts; workflow uses contents:read and no user input shell interpolation or secrets.
-- [x] Scan all staged files for credentials, personal paths, raw IPs and SNN files. Documentation intentionally names the project workspace but contains no account token/config data.
+- [x] Scan all staged files for credentials, personal paths, raw IPs and unrelated workspace files. Documentation intentionally names the project workspace but contains no account token/config data.
 - [x] Verify authenticated GitHub owner and nonexistence/collision of `xndxyy/codex-timezone-guard`; do not overwrite an existing unrelated repository.
 - [x] Commit reviewed source to `codex/implementation`, make the public default main branch from the reviewed commit and create a labeled prerelease because real Codex runtime verification requires a safe user restart.
 - [x] Upload EXE, ZIP if useful, SHA256SUMS and verification report. Compare the downloaded release asset hash to local artifact, keeping any downloads in artifacts/verification/.

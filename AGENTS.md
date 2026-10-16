@@ -2,7 +2,9 @@
 
 Read goal.md, plan.md, status.json and the latest error_correction.md entry at turn start. The user approved isolation A and explicitly authorized execution of docs/design.md in this new independent workspace. Do not ask for the same approval again.
 
-All new source, caches, temporary files, build/test outputs and research belong in this repository during development. The old D-drive SNN research project is unrelated: do not modify, stage, move or run its files/jobs. Do not use GPU or restart the active Codex session.
+All new source, caches, temporary files, build/test outputs and research belong in this repository during development. Directories outside this repository are unrelated: do not modify, stage, move or run their files/jobs. Do not use GPU or restart the active Codex session.
+
+Public documentation should describe this project only. Do not name, link to or compare other community projects, or expose unrelated local workspace names. Preserve required third-party copyright and license notices without promotional comparisons. Do not rewrite published history or silently replace release assets to retrofit documentation.
 
 Use current Context7 for library-specific guidance. Prefer built-in .NET and the smallest adequate dependency graph. Follow TDD and preserve red/green evidence; test fixtures are not real Codex verification.
 
