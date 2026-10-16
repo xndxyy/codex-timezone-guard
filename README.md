@@ -12,6 +12,30 @@ IANA 地区时区，也支持离线手动选择，然后以独立 `TZ` 环境启
 > 真实 Codex/Store 安装渠道与运行时时区需要用户安全退出后验证；未验证项目
 > 不宣称兼容。详细证据见 [验证报告](docs/verification.md)。
 
+## 本项目针对什么问题？
+
+**面向部分中国用户使用 Windows Codex 桌面端时反馈的 `Model not found` /
+`Model not find` 相关场景，专门处理用户调研指向的“客户端时区与网络出口地区不匹配”问题。**
+尤其是在使用代理、但不想为了一个应用修改整个 Windows 时区的情况下，本工具
+提供仅针对新 Codex 桌面进程的时区选择与启动方式。
+
+| 遇到的具体问题 | 本项目的处理方式 |
+|---|---|
+| Windows 保持本地时区，但希望 Codex 使用网络出口地区的时区 | 根据明确观测到的出口 IP 推荐 IANA 地区时区，或由用户手动选择 |
+| 代理软件使用规则模式，普通 IP 查询网站可能直连，Codex 相关域名却走代理 | 优先探测目标域名，而非直接套用通用 IP 网站的结果；观测冲突时转手动处理 |
+| 网页版的时区扩展不能直接用于 Codex 桌面客户端 | 提供独立 Windows EXE 启动器，不要求安装浏览器插件 |
+| 不希望调整系统时区或影响独立打开的其他应用 | 只向本次新启动的 Codex 桌面进程传入 `TZ`，不改 Windows/用户/机器环境 |
+| 不熟悉命令、环境变量或开发环境 | 提供中文界面、时间预览和自带运行时的便携 EXE |
+
+**范围只有时区配置。** 本项目不读取或修改模型列表、账号权限、登录令牌或聊天内容，
+不排查 `Model not found` 的其他原因，也不承诺修复所有同名错误。错误背景来自用户
+调研与社区实践，不代表 OpenAI 官方根因结论；当前仍需完成真实 Codex/Store
+启动及 `Date/Intl` 时区采用情况的人工验收。
+
+**仅用于 Codex 桌面端**，不面向网页版 ChatGPT、独立 ChatGPT 桌面端、Codex CLI
+或 IDE 插件。Codex 启动的终端、Python、Node 等后代可能继承 `TZ`，这是已确认的
+A 隔离边界。目标域名探测也不能证明按进程分流下 Codex 的全部实际出口。
+
 ## 下载
 
 请在 [GitHub Releases](https://github.com/xndxyy/codex-timezone-guard/releases)
@@ -148,6 +172,11 @@ timezone using destination-aware, anonymous egress probes, or accepts a manual
 selection, and starts a validated new client with a child-process-local `TZ`.
 Windows/global environment and proxy rules are unchanged. Codex descendants may
 inherit `TZ`; already-running/shared processes may retain their previous state.
+
+Motivated by user-reported `Model not found` / `Model not find` scenarios associated
+with client/egress timezone mismatch, particularly with rule-based proxies.
+It addresses timezone configuration only—not model permissions, account access
+or every occurrence of the same error. This is not an official root-cause claim.
 
 This is an independent prerelease, not an OpenAI product or an access guarantee.
 Probes are recommendations, not proof of Codex's per-process route. Manual mode

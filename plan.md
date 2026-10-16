@@ -62,4 +62,6 @@
 - [x] 规格与独立质量/安全审查通过；跨安装、资源不可用、正常关闭生命周期三类问题均有红/绿回归。
 - [x] 发布文档、许可证、隐私、安全、截图、CI 和验收说明已准备。
 - [x] 最终冻结构建、GitHub 预发布与远端资产下载校验：v0.1.0-preview.1，来源 b9faea2；公开 7/7 资产哈希一致，远端 Windows CI success。
+- [x] README 补充 Model not found / Model not find 的时区相关使用场景、规则模式与仅桌面端范围；不替换现有发布资产。
 - [ ] 真实 Codex/Store 新进程 Date/Intl 人工验收（用户安全退出后执行；不阻断如实标注的预发布）。
+- [ ] 删除旧 D:\SNN-RobustCD\codex-timezone-guard（用户重新授权后仍被执行策略拒绝；需用户手动处理，不绕过）。
