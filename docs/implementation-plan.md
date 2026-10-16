@@ -75,9 +75,9 @@ Expected: named passing checks, a nonzero count, zero failures and build exit 0.
 - [x] Add Windows CI calling the same verification/build scripts; workflow uses contents:read and no user input shell interpolation or secrets.
 - [x] Scan all staged files for credentials, personal paths, raw IPs and SNN files. Documentation intentionally names the project workspace but contains no account token/config data.
 - [x] Verify authenticated GitHub owner and nonexistence/collision of `xndxyy/codex-timezone-guard`; do not overwrite an existing unrelated repository.
-- [ ] Commit reviewed source to `codex/implementation`, make the public default main branch from the reviewed commit and create a labeled prerelease because real Codex runtime verification requires a safe user restart.
-- [ ] Upload EXE, ZIP if useful, SHA256SUMS and verification report. Compare the downloaded release asset hash to local artifact, keeping any downloads in artifacts/verification/.
-- [ ] Update goal/plan/status/error_correction with actual counts, limitations, commit/tag/URLs. Report what shipped and the remaining user-controlled real-client check.
+- [x] Commit reviewed source to `codex/implementation`, make the public default main branch from the reviewed commit and create a labeled prerelease because real Codex runtime verification requires a safe user restart.
+- [x] Upload EXE, ZIP if useful, SHA256SUMS and verification report. Compare the downloaded release asset hash to local artifact, keeping any downloads in artifacts/verification/.
+- [x] Update goal/plan/status/error_correction with actual counts, limitations, commit/tag/URLs. Report what shipped and the remaining user-controlled real-client check.
 
 ## Self-review
 

@@ -1,0 +1,69 @@
+{
+  "verifiedAtUtc": "2026-10-16T05:56:39.5640471Z",
+  "repository": "https://github.com/xndxyy/codex-timezone-guard",
+  "visibility": "public",
+  "prerelease": true,
+  "draft": false,
+  "release": "https://github.com/xndxyy/codex-timezone-guard/releases/tag/v0.1.0-preview.1",
+  "tag": "v0.1.0-preview.1",
+  "sourceCommit": "b9faea237609f01f4db58c7f4d99b6c0f16cce17",
+  "assets": [
+    {
+      "name": "CodexTimezoneGuard-win-x64.exe",
+      "bytes": 51710799,
+      "sha256": "7575733834382b2d79dfaa63ba36055232ccc38702c8281e7b3d5db5bb2c8e10",
+      "serverDigest": "sha256:7575733834382b2d79dfaa63ba36055232ccc38702c8281e7b3d5db5bb2c8e10",
+      "publicDownloadVerified": true,
+      "url": "https://github.com/xndxyy/codex-timezone-guard/releases/download/v0.1.0-preview.1/CodexTimezoneGuard-win-x64.exe"
+    },
+    {
+      "name": "CodexTimezoneGuard-v0.1.0-preview.1-win-x64.zip",
+      "bytes": 46395403,
+      "sha256": "bda2a063c1b81e3ba3f7a44255674429c27e41f769e699d7bfddbc312e5760d1",
+      "serverDigest": "sha256:bda2a063c1b81e3ba3f7a44255674429c27e41f769e699d7bfddbc312e5760d1",
+      "publicDownloadVerified": true,
+      "url": "https://github.com/xndxyy/codex-timezone-guard/releases/download/v0.1.0-preview.1/CodexTimezoneGuard-v0.1.0-preview.1-win-x64.zip"
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "bytes": 213,
+      "sha256": "e97c87c23171c5dde2afc54a6c6e231650a7d449da5d5f49ee5102d73ee56e88",
+      "serverDigest": "sha256:e97c87c23171c5dde2afc54a6c6e231650a7d449da5d5f49ee5102d73ee56e88",
+      "publicDownloadVerified": true,
+      "url": "https://github.com/xndxyy/codex-timezone-guard/releases/download/v0.1.0-preview.1/SHA256SUMS.txt"
+    },
+    {
+      "name": "build-receipt.json",
+      "bytes": 635,
+      "sha256": "dc9b545fb06250b92d7e7928737d2731ff11cf9a6450bc5d179717763bc0cf60",
+      "serverDigest": "sha256:dc9b545fb06250b92d7e7928737d2731ff11cf9a6450bc5d179717763bc0cf60",
+      "publicDownloadVerified": true,
+      "url": "https://github.com/xndxyy/codex-timezone-guard/releases/download/v0.1.0-preview.1/build-receipt.json"
+    },
+    {
+      "name": "tests.json",
+      "bytes": 9478,
+      "sha256": "700c8d7eee4648c63583688d526736455814d16707054d46a42d6db048edf269",
+      "serverDigest": "sha256:700c8d7eee4648c63583688d526736455814d16707054d46a42d6db048edf269",
+      "publicDownloadVerified": true,
+      "url": "https://github.com/xndxyy/codex-timezone-guard/releases/download/v0.1.0-preview.1/tests.json"
+    },
+    {
+      "name": "packaged-self-test.json",
+      "bytes": 954,
+      "sha256": "25bc00c0e3155ad63af068a2bc2cdaf1a680afddd63da49248aa358e22001f47",
+      "serverDigest": "sha256:25bc00c0e3155ad63af068a2bc2cdaf1a680afddd63da49248aa358e22001f47",
+      "publicDownloadVerified": true,
+      "url": "https://github.com/xndxyy/codex-timezone-guard/releases/download/v0.1.0-preview.1/packaged-self-test.json"
+    },
+    {
+      "name": "verification.md",
+      "bytes": 7761,
+      "sha256": "0cc8dd5e666756e62209db1afc644d2a28caa78659866473a10a95fc4249c080",
+      "serverDigest": "sha256:0cc8dd5e666756e62209db1afc644d2a28caa78659866473a10a95fc4249c080",
+      "publicDownloadVerified": true,
+      "url": "https://github.com/xndxyy/codex-timezone-guard/releases/download/v0.1.0-preview.1/verification.md"
+    }
+  ],
+  "realCodexRuntimeVerified": false
+}

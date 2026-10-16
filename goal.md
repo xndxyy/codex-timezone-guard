@@ -3,8 +3,9 @@
 日期：2026-10-15（America/Phoenix）。状态：A 隔离边界已由用户确认，书面技术设计已获用户执行授权。
 
 最近进展：2026-10-16（Asia/Shanghai），应用与中文 UI 已实现，规格/质量安全审查通过，
-本地 98 项逻辑测试、16 项脚本检查、14 项打包离线自检通过。正在最终冻结/公开预发布；
-真实 Codex/Store 运行时保持未验证，发布状态以 status.json 与 docs/publication.md 为准。
+本地 98 项逻辑测试、16 项脚本检查、14 项打包离线自检通过。源码与 EXE 预发布已公开，
+7 个资产匿名下载哈希一致，冻结提交的 GitHub Windows CI 通过。真实 Codex/Store
+运行时保持未验证；版本、来源与下载记录见 status.json 与 docs/publication.md。
 
 ## 目标
 

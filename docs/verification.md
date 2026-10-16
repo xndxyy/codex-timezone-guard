@@ -5,6 +5,8 @@
 ## 结论
 
 本地确定性测试、实际环境探针、Windows Forms 离线自检与单文件打包已经执行。
+源码与预发布资产已公开，7 个资产均经匿名实际下载核对 SHA-256；冻结提交的
+GitHub Windows 构建也已通过。远端证据见 [publication.md](publication.md)。
 **真实 Codex/Store 新进程启动、Date/Intl 是否采用所选时区，仍未人工验收。**
 当前客户端保持运行，没有为测试而退出或重启。因此只提供 **Pre-release**，不宣称
 所有安装渠道兼容，也不保证特定服务端错误消失。
@@ -23,6 +25,8 @@
 | 本轮前后系统与全局 TZ 快照 | 一致 | Windows 时区 China Standard Time；进程/用户/机器 TZ 均保持原值 |
 | 真实匿名网络请求 | 有建议、有冲突，两类均保留 | 见下节，不推断成 Codex 全链路出口证明 |
 | 本机只读客户端发现 | 1 个 Store 候选、运行中 | 只读发现不是已成功启动；当前会话未被操作 |
+| GitHub Windows CI | 通过 | 冻结提交，同一脚本，无 Codex 账号；不是实际客户端验收 |
+| 公开 Release 下载校验 | 7/7 一致 | 服务器 digest、大小、匿名下载重新计算哈希均核对 |
 
 源码自检摘要见 [core-tests.json](evidence/core-tests.json)，离线表单摘要见
 [offline-ui-self-test.json](evidence/offline-ui-self-test.json)。发布资产中的 `tests.json`、
