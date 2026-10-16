@@ -1,17 +1,52 @@
 # Codex Timezone Guard
 
-**只给 Codex 桌面端设置时区，不改 Windows 全局时区。**
+**仅为新启动的 Codex 桌面进程设置时区，不修改 Windows 全局时区。**
 
-一个面向普通用户的 Windows 中文启动器：按目标域名探测网络出口、自动推荐
-IANA 地区时区，也支持离线手动选择，然后以独立 `TZ` 环境启动 Codex。
-专注于规则代理下的时区检测、手动选择与进程级环境隔离。
+一个面向普通用户的 Windows 中文启动器：根据目标域名请求的出口观测推荐 IANA 地区时区，也支持离线手动选择，再以独立的 `TZ` 环境启动经过身份检查的 Codex 桌面客户端。
 
-> **预发布提示**：这是独立社区工具，不是 OpenAI 官方产品。
-> 自动检测是基于目标请求的建议，不是 Codex 全部流量出口的证明。
-> 真实 Codex/Store 安装渠道与运行时时区需要用户安全退出后验证；未验证项目
-> 不宣称兼容。详细证据见 [验证报告](docs/verification.md)。
+> **独立社区工具 · 预发布**：不是 OpenAI 官方产品，也不是模型权限或服务可用性的保证。自动探测只能提供建议，不能证明 Codex 全部流量的实际出口。真实 Codex / Store 新进程启动与 `Date/Intl` 时区采用情况仍需用户控制的人工验收；未验证项目不宣称兼容。
 
-## 本项目针对什么问题？
+## 从这里开始
+
+| 你的目的 | 入口 |
+| --- | --- |
+| 下载便携工具并开始使用 | [下载与校验](#下载与校验)、[三步开始](#三步开始) |
+| 了解适用场景与进程影响 | [适用场景](#适用场景)、[隔离边界](#隔离边界) |
+| 判断证据是否满足自己的环境 | [验证报告](docs/verification.md)、[真实客户端验收](docs/manual-acceptance.md) |
+| 了解联网和数据处理 | [隐私说明](PRIVACY.md)、[安全说明](SECURITY.md) |
+| 开发、构建或贡献 | [从源码构建](#从源码构建)、[贡献指南](CONTRIBUTING.md) |
+
+## 下载与校验
+
+请在 [GitHub Releases](https://github.com/xndxyy/codex-timezone-guard/releases)
+选择标注 **Pre-release** 的版本：
+
+- `CodexTimezoneGuard-win-x64.exe`：便携单文件，双击运行，不需要自行安装 .NET。
+- ZIP：同一 EXE 加许可证、隐私说明和基础验证报告。
+- `SHA256SUMS.txt`：核对文件完整性，具体步骤见 [安全说明](SECURITY.md)。
+
+没有商业代码签名，Windows 可能显示“未知发布者”。请先核实下载来源和校验值；
+不能确认就不要运行。**不需要关闭杀毒、修改安全设置或授予管理员权限。**
+
+首版面向 **Windows 11 x64**。Windows 10 x64 尚未实机验证；不提供 ARM64、
+macOS、Linux 或浏览器扩展包。IANA 转换依赖系统可用的时区/全球化支持，老旧或
+特殊配置的系统可能不支持，程序不通过修改系统设置来补救。
+
+## 三步开始
+
+1. **保存工作并正常退出已运行的 Codex。** 启动器不会强制关闭它，已运行进程
+   不会因为保存了时区设置而自动改变。
+2. 打开本工具，确认首次联网说明后进行**自动检测**，或者切换到**手动选择**。
+   检查 IANA 时区和时间预览，例如 `America/Los_Angeles`。
+3. 确认检测到的 **Codex 桌面客户端**，点击**保存并启动**。
+
+第一次可以先只选择时区和查看预览，不必立即启动 Codex。检测失败时仍可手动使用。
+
+<img src="docs/screenshots/main-window.png" alt="Codex Timezone Guard 中文窗口的离线渲染预览" width="960">
+
+*上图是实际 Windows Forms 的离线绘制预览，不是公网探测或真实 Codex 运行时生效证明。*
+
+## 适用场景
 
 **面向部分中国用户使用 Windows Codex 桌面端时反馈的 `Model not found` /
 `Model not find` 相关场景，专门处理用户调研指向的“客户端时区与网络出口地区不匹配”问题。**
@@ -35,37 +70,7 @@ IANA 地区时区，也支持离线手动选择，然后以独立 `TZ` 环境启
 或 IDE 插件。Codex 启动的终端、Python、Node 等后代可能继承 `TZ`，这是已确认的
 A 隔离边界。目标域名探测也不能证明按进程分流下 Codex 的全部实际出口。
 
-## 下载
-
-请在 [GitHub Releases](https://github.com/xndxyy/codex-timezone-guard/releases)
-选择标注 **Pre-release** 的版本：
-
-- `CodexTimezoneGuard-win-x64.exe`：便携单文件，双击运行，不需要自行安装 .NET。
-- ZIP：同一 EXE 加许可证、隐私说明和基础验证报告。
-- `SHA256SUMS.txt`：核对文件完整性，具体步骤见 [安全说明](SECURITY.md)。
-
-没有商业代码签名，Windows 可能显示“未知发布者”。请先核实下载来源和校验值；
-不能确认就不要运行。**不需要关闭杀毒、修改安全设置或授予管理员权限。**
-
-首版面向 **Windows 11 x64**。Windows 10 x64 尚未实机验证；不提供 ARM64、
-macOS、Linux 或浏览器扩展包。IANA 转换依赖系统可用的时区/全球化支持，老旧或
-特殊配置的系统可能不支持，程序不通过修改系统设置来补救。
-
-## 小白使用：三步
-
-1. **保存工作并正常退出已运行的 Codex。** 启动器不会强制关闭它，已运行进程
-   不会因为保存了时区设置而自动改变。
-2. 打开本工具，确认首次联网说明后进行**自动检测**，或者切换到**手动选择**。
-   检查 IANA 时区和时间预览，例如 `America/Los_Angeles`。
-3. 确认检测到的 **Codex 桌面客户端**，点击**保存并启动**。
-
-第一次可以先只选择时区和查看预览，不必立即启动 Codex。检测失败时仍可手动使用。
-
-<img src="docs/screenshots/main-window.png" alt="Codex Timezone Guard 中文窗口的离线渲染预览" width="960">
-
-*上图是实际 Windows Forms 的离线绘制预览，不是公网探测或真实 Codex 运行时生效证明。*
-
-## 哪些东西会改变？
+## 隔离边界
 
 | 对象 | 行为 |
 |---|---|
@@ -136,12 +141,24 @@ ChatGPT 桌面产品当成 Codex 使用。
 环境；本工具从未改系统时区。退出并删除本工具 EXE 与
 `%LOCALAPPDATA%\CodexTimezoneGuard` 设置目录即可卸载，不要删除 Codex 的数据。
 
+## 验证状态与发布来源
+
+现有预发布为 [v0.1.0-preview.1](https://github.com/xndxyy/codex-timezone-guard/releases/tag/v0.1.0-preview.1)。构建、确定性测试、打包自检、实际网络观测和真实客户端运行时是不同证据，不能相互替代。
+
+- [验证报告](docs/verification.md)：测试范围、兼容性矩阵与未验证事项。
+- [发布记录](docs/publication.md)：冻结来源、发布资产和远端核验记录。
+- [手工验收](docs/manual-acceptance.md)：由用户自行选择安全时机，验证真正的客户端行为。
+
+文档维护不会自动重建已发布二进制、替换资产或移动发布标签。既有测试结果不代表当前机器上的真实 Codex 已经验证通过。
+
 ## 从源码构建
 
-要求 Windows x64 与 `global.json` 指定的 .NET 10 SDK，不需要额外的语言工具链
-或第三方 NuGet 应用依赖。先克隆本仓库，然后：
+要求 Windows x64 与 [global.json](global.json) 指定的 .NET SDK（10.0.400，允许最新补丁版本），不需要额外的语言工具链
+或第三方 NuGet 应用依赖。克隆本仓库后，在仓库根目录执行：
 
 ```powershell
+git clone https://github.com/xndxyy/codex-timezone-guard.git
+cd codex-timezone-guard
 .\scripts\verify.ps1
 .\scripts\build.ps1
 ```
