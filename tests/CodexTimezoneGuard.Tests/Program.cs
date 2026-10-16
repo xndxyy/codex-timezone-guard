@@ -190,6 +190,68 @@ await Test("cross-install validated desktop resource removal stays uncertain", (
 await Test("manual path cannot bypass desktop identity", () => Sync(() => {
     var l = new FakeLauncher(); Error(() => new LaunchCoordinator(new FakeRunning(RunningState.Clear), l).Launch(new("codex.exe", "CLI"), "Asia/Tokyo"), "invalid_desktop_identity"); Check(l.Calls == 0);
 }));
+await Test("launch lifecycle vetoes normal close through fake child cleanup", async () => {
+    var lifecycle = new LaunchLifecycle();
+    var finishCreation = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+    var cleanupEntered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+    var finishCleanup = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+    bool cleaned = false;
+    Check(lifecycle.CanCloseNormally, "idle launcher must remain closable");
+    Task launchTask = lifecycle.RunAsync(async () => {
+        try { await finishCreation.Task; }
+        finally { cleanupEntered.SetResult(); await finishCleanup.Task; cleaned = true; }
+    });
+    try
+    {
+        Check(!lifecycle.CanCloseNormally, "normal close allowed while fake suspended child exists");
+        finishCreation.SetResult(); await cleanupEntered.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        Check(!lifecycle.CanCloseNormally, "normal close allowed before child cleanup finished");
+    }
+    finally { finishCreation.TrySetResult(); finishCleanup.TrySetResult(); await launchTask; }
+    Check(cleaned && lifecycle.CanCloseNormally, "normal close not restored after cleanup");
+});
+await Test("launch lifecycle releases normal close after asynchronous failure cleanup", async () => {
+    var lifecycle = new LaunchLifecycle();
+    var finish = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+    bool cleaned = false;
+    Task launchTask = lifecycle.RunAsync(async () => {
+        try { await finish.Task; throw new IOException("controlled fixture failure"); }
+        finally { cleaned = true; }
+    });
+    try { Check(!lifecycle.CanCloseNormally, "normal close allowed during failing launch"); }
+    finally
+    {
+        finish.TrySetResult();
+        try { await launchTask; } catch (IOException) { }
+    }
+    Check(cleaned && lifecycle.CanCloseNormally, "failure did not restore close after cleanup");
+});
+await Test("launch lifecycle releases normal close after synchronous failure", async () => {
+    var lifecycle = new LaunchLifecycle();
+    try { await lifecycle.RunAsync(() => throw new IOException("controlled fixture failure")); }
+    catch (IOException) { Check(lifecycle.CanCloseNormally); return; }
+    throw new InvalidOperationException("fixture failure was not propagated");
+});
+await Test("launch lifecycle does not block detection-only cancellation and close", () => Sync(() => {
+    var lifecycle = new LaunchLifecycle();
+    using var cancellation = new CancellationTokenSource();
+    var epoch = new DetectionEpoch(); long detection = epoch.Begin();
+    Check(lifecycle.CanCloseNormally, "detection-only state blocked close");
+    cancellation.Cancel(); epoch.Invalidate();
+    Check(cancellation.IsCancellationRequested && !epoch.IsCurrent(detection) && lifecycle.CanCloseNormally);
+}));
+await Test("launch lifecycle rejects a second in-flight launch", async () => {
+    var lifecycle = new LaunchLifecycle();
+    var finish = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+    Task first = lifecycle.RunAsync(() => finish.Task);
+    try
+    {
+        try { await lifecycle.RunAsync(() => Task.CompletedTask); }
+        catch (InvalidOperationException) { return; }
+        throw new InvalidOperationException("second launch was allowed inside the critical interval");
+    }
+    finally { finish.TrySetResult(); await first; }
+});
 await Test("new detection and cancellation invalidate older updates", () => Sync(() => {
     var e = new DetectionEpoch(); long a = e.Begin(), b = e.Begin(); Check(!e.IsCurrent(a) && e.IsCurrent(b)); e.Invalidate(); Check(!e.IsCurrent(b));
 }));

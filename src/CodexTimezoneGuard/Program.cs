@@ -55,6 +55,19 @@ internal static class Program
                 timezone.Text = "Asia/Tokyo"; automatic.Checked = true; offline.Checked = true;
                 checks["switch_to_manual_preserves_selected_timezone"] = timezone.Text == "Asia/Tokyo" && timezone.Enabled && !((CheckBox)form.Controls.Find("consent", true)[0]).Checked;
             }
+            var lifecycle = new LaunchLifecycle();
+            using var closingForm = new MainWindow(preview: true, launchLifecycle: lifecycle);
+            closingForm.Show(); Application.DoEvents();
+            var finishLaunch = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            Task fakeLaunch = lifecycle.RunAsync(() => finishLaunch.Task);
+            closingForm.Close(); Application.DoEvents();
+            checks["normal_close_vetoed_during_launch"] = !closingForm.IsDisposed && closingForm.Visible;
+            finishLaunch.SetResult(); fakeLaunch.GetAwaiter().GetResult();
+            closingForm.Close(); Application.DoEvents();
+            checks["normal_close_allowed_after_launch_cleanup"] = lifecycle.CanCloseNormally && closingForm.IsDisposed;
+            using var idleClosingForm = new MainWindow(preview: true);
+            idleClosingForm.Show(); Application.DoEvents(); idleClosingForm.Close(); Application.DoEvents();
+            checks["normal_close_allowed_without_launch"] = idleClosingForm.IsDisposed;
         }
         catch { checks["unhandled_failure"] = false; }
         bool success = checks.Count > 0 && checks.Values.All(v => v);

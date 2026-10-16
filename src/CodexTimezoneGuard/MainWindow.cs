@@ -11,6 +11,7 @@ public sealed class MainWindow : Form
     private readonly SettingsStore? store;
     private GuardSettings settings = new();
     private readonly DetectionEpoch epoch = new();
+    private readonly LaunchLifecycle launchLifecycle;
     private CancellationTokenSource? detectionCancellation;
     private DetectionResult? latest;
     private DiscoveryResult discovery = new([], "not_checked");
@@ -26,9 +27,10 @@ public sealed class MainWindow : Form
     private readonly System.Windows.Forms.Timer clockTimer = new() { Interval = 1000 };
     private bool busy, applyingSuggestion;
 
-    public MainWindow(bool preview = false)
+    public MainWindow(bool preview = false, LaunchLifecycle? launchLifecycle = null)
     {
         this.preview = preview;
+        this.launchLifecycle = launchLifecycle ?? new();
         Text = "Codex Timezone Guard · 时区启动器（预发布）";
         Name = "MainWindow"; ClientSize = new(1100, 862); MinimumSize = new(760, 480);
         StartPosition = FormStartPosition.CenterScreen; BackColor = Canvas; ForeColor = Ink;
@@ -52,7 +54,16 @@ public sealed class MainWindow : Form
         browse.Click += (_, _) => SelectManualClient(); refresh.Click += async (_, _) => { if (!preview) await DiscoverAsync(); };
         launch.Click += async (_, _) => await SaveAndLaunchAsync(); reset.Click += (_, _) => ResetSettings(); copy.Click += (_, _) => CopyDiagnostics();
         clockTimer.Tick += (_, _) => UpdateClocks(); clockTimer.Start();
-        FormClosing += (_, _) => { epoch.Invalidate(); detectionCancellation?.Cancel(); clockTimer.Stop(); };
+        FormClosing += (_, e) =>
+        {
+            if (!this.launchLifecycle.CanCloseNormally)
+            {
+                e.Cancel = true;
+                SetStatus("正在完成安全启动或清理尚未执行的子进程，请完成后再关闭启动器。不会结束已有 Codex。", false);
+                return;
+            }
+            epoch.Invalidate(); detectionCancellation?.Cancel(); clockTimer.Stop();
+        };
         Shown += (_, _) =>
         {
             var area = Screen.FromControl(this).WorkingArea;
@@ -120,9 +131,10 @@ public sealed class MainWindow : Form
         systemClock.Text = DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm:ss zzz");
         targetClock.Text = TimezoneCatalog.TryGet(timezone.Text, out _) ? TimezoneCatalog.Preview(timezone.Text, DateTimeOffset.UtcNow) : "请选择有效的 IANA ID";
     }
-    private void SetStatus(string message, bool error) { status.Text = message; status.BackColor = error ? Color.FromArgb(255, 241, 229) : Color.FromArgb(235, 246, 244); }
+    private void SetStatus(string message, bool error) { if (IsDisposed || Disposing) return; status.Text = message; status.BackColor = error ? Color.FromArgb(255, 241, 229) : Color.FromArgb(235, 246, 244); }
     private void SetBusy(bool value)
     {
+        if (IsDisposed || Disposing) return;
         busy = value; launch.Enabled = detect.Enabled = browse.Enabled = refresh.Enabled = reset.Enabled = !value;
         manual.Enabled = automatic.Enabled = timezone.Enabled = client.Enabled = consent.Enabled = !value; cancel.Enabled = value && detectionCancellation is not null; UseWaitCursor = value;
     }
@@ -189,25 +201,30 @@ public sealed class MainWindow : Form
     }
     private async Task SaveAndLaunchAsync()
     {
-        if (preview || busy) return;
+        if (preview || busy || IsDisposed || Disposing || !launchLifecycle.CanCloseNormally) return;
         if (client.SelectedItem is not CodexCandidate candidate) { SetStatus("请先选择一个已验证的 Codex 桌面客户端。没有候选时，可手动定位；不会猜测 CLI。", true); return; }
         string? zone;
         if (automatic.Checked) { var evidence = await DetectAsync(); if (evidence?.Suggested != true) return; zone = evidence.Timezone; }
         else zone = timezone.Text;
+        if (IsDisposed || Disposing) return;
         if (!TimezoneCatalog.TryGet(zone, out _)) { SetStatus("请输入有效的 IANA 地区时区，例如 Asia/Shanghai、America/Phoenix。", true); return; }
         string warning = $"本次新启动的 Codex 及其后代将继承：\n\nTZ = {zone}\n\nWindows 时区、用户/机器环境和独立应用不变。\n已有 Codex 请先保存工作并自行退出，本工具绝不结束现有进程。\n\n创建进程不等于 Codex 全部组件已经采用该时区；实际运行时尚未验证。是否保存并启动？";
         if (MessageBox.Show(this, warning, "确认本次启动时区", MessageBoxButtons.OKCancel, MessageBoxIcon.Information, MessageBoxDefaultButton.Button2) != DialogResult.OK) return;
-        SetBusy(true);
-        try
+        await launchLifecycle.RunAsync(async () =>
         {
-            candidate = await Task.Run(() => CodexDiscovery.ResolveCurrent(candidate));
-            settings = new(automatic.Checked ? "auto" : "manual", zone!, consent.Checked, candidate.PackageFamily is null ? candidate.Path : null, candidate.PackageFamily); store!.Save(settings);
-            int pid = await Task.Run(() => new LaunchCoordinator(new WindowsRunningGuard(), new WindowsChildLauncher()).Launch(candidate, zone!));
-            SetStatus($"设置已保存，目标进程已创建（PID {pid}）。TZ 已传入本次子进程环境，但真实 Codex 日期运行时尚未验证。", false);
-        }
-        catch (GuardException e) { SetStatus("未完成启动：" + SafeMessages.ForCode(e.Code), true); }
-        catch { SetStatus("未完成启动：发生受控错误。未记录路径、环境或异常原文；请复制脱敏诊断。", true); }
-        finally { if (!IsDisposed) SetBusy(false); }
+            SetBusy(true);
+            try
+            {
+                candidate = await Task.Run(() => CodexDiscovery.ResolveCurrent(candidate));
+                if (IsDisposed || Disposing) return;
+                settings = new(automatic.Checked ? "auto" : "manual", zone!, consent.Checked, candidate.PackageFamily is null ? candidate.Path : null, candidate.PackageFamily); store!.Save(settings);
+                int pid = await Task.Run(() => new LaunchCoordinator(new WindowsRunningGuard(), new WindowsChildLauncher()).Launch(candidate, zone!));
+                SetStatus($"设置已保存，目标进程已创建（PID {pid}）。TZ 已传入本次子进程环境，但真实 Codex 日期运行时尚未验证。", false);
+            }
+            catch (GuardException e) { SetStatus("未完成启动：" + SafeMessages.ForCode(e.Code), true); }
+            catch { SetStatus("未完成启动：发生受控错误。未记录路径、环境或异常原文；请复制脱敏诊断。", true); }
+            finally { if (!IsDisposed) SetBusy(false); }
+        });
     }
     private void ResetSettings()
     {
